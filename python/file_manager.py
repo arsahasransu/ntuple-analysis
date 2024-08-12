@@ -270,8 +270,18 @@ def copy_from_eos(input_dir, file_name, target_file_name, dowait=False, silent=F
     return fs.copy(os.path.join(input_dir, file_name), target_file_name, silent)
 
 
+def copy_from_localdir(input_dir, file_name, target_file_name, dowait=False, silent=False):
+    fs = LocalFileSystem(input_dir)
+    return fs.copy(os.path.join(input_dir, file_name), target_file_name, silent)
+
+
 def copy_to_eos(file_name, target_dir, target_file_name):
     fs = XrdFileSystem(get_eos_protocol(target_dir))
+    return fs.copy(file_name, os.path.join(target_dir, target_file_name))
+
+
+def copy_to_localdir(file_name, target_dir, target_file_name):
+    fs = LocalFileSystem(target_dir)
     return fs.copy(file_name, os.path.join(target_dir, target_file_name))
 
 
@@ -348,12 +358,16 @@ def get_metadata(input_dir, tree, debug=0):
 
         with open(json_name, 'w', encoding='utf-8') as fp:
             json.dump(file_metadata, fp)
-        retc = copy_to_eos(file_name=json_name, target_dir=input_dir, target_file_name=json_name)
+        retc = copy_to_eos(json_name, input_dir, json_name) if input_dir.startswith(
+            '/eos/'
+        ) else copy_to_localdir(json_name, input_dir, json_name)
         print(f'COPY: {json_name} to {input_dir} w name: {json_name} return: {retc}')
     else:
         print('dir already indexed, will read metadata...')
         unique_filename = f'{uuid.uuid4()}.json'
-        ret = copy_from_eos(input_dir=input_dir, file_name=json_name, target_file_name=unique_filename)
+        ret = copy_from_eos(input_dir, json_name, unique_filename) if input_dir.startswith(
+            '/eos/'
+        ) else copy_from_localdir(input_dir, json_name, unique_filename)
         print(f'copy file: {unique_filename} ret: {ret}')
         with open(unique_filename, 'r', encoding='utf-8') as fp:
             file_metadata = json.load(fp)

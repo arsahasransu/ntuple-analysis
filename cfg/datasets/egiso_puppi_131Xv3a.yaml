@@ -1,0 +1,11 @@
+dataset:
+  input_dir:  /opt/ppd/scratch/asahasra/condor_scratch/Outputs/
+  calib_version: calib-v134C
+  version: 131Xv3a
+
+  tree_name: Events
+
+samples:
+  dytoll_m50_PU0:
+    input_sample_dir: DYToLL_M50_PU0/FP/240801_131Xv3a/
+    events_per_job : 200

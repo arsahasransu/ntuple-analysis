@@ -46,7 +46,8 @@ def analyze(params, batch_idx=-1):
         pprint(f'        - {file_name}')
     pprint('')
 
-    files_with_protocol = [fm.get_eos_protocol(file_name) + file_name for file_name in input_files]
+    files_with_protocol = [(fm.get_eos_protocol(file_name) + file_name if file_name.startswith('/eos') 
+                            else file_name) for file_name in input_files ]
 
     calib_manager = calibs.CalibManager()
     calib_manager.set_calibration_version(params.calib_version)

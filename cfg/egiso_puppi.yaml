@@ -1,0 +1,16 @@
+
+common:
+  output_dir:
+    default: /opt/ppd/scratch/asahasra/egiso_puppi_dir
+  plot_version: v1
+  run_clustering: False
+  run_density_computation: False
+  file_label: eg
+
+gen_plots:
+  file_label:
+    gens
+  samples:
+    - dytoll_m50_PU0
+  plotters:
+    - !!python/name:cfg.egiso_puppi.all_genel_plotter

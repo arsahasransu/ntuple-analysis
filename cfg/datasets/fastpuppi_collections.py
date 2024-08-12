@@ -166,14 +166,14 @@ def mapcalo2pfregions_out(objects):
 
 
 gen_ele = DFCollection(
-    name='GEN', label='GEN particles (ele)',
+    name='genel', label='GEN particles (ele)',
     filler_function=lambda event, entry_block: event.getDataFrame(
         prefix='GenEl', entry_block=entry_block),
     fixture_function=ele_mc_fixtures,
     # print_function=lambda df: df[['pdgid', 'pt', 'eta', 'phi']],
     # print_function=lambda df: df[(df.pdgid==23 | (abs(df.pdgid)==15))],
     max_print_lines=None,
-    debug=0)
+    debug=1)
 # gen_ele.activate()
 
 
