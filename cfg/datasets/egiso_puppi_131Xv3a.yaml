@@ -8,4 +8,4 @@ dataset:
 samples:
   dytoll_m50_PU0:
     input_sample_dir: DYToLL_M50_PU0/FP/240801_131Xv3a/
-    events_per_job : 200
+    events_per_job : 10

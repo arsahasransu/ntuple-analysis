@@ -12,10 +12,18 @@ echo "Current dir: ${BATCH_DIR}"
 hostname
 
 tar xfz ntuple-tools.tar.gz
+echo "======================"
+ls
 
-source ./setup_lxplus.sh
-source ./setVirtualEnvWrapper.sh
-workon TEMPL_VIRTUALENV
+tar xfz puppi_iso_p2eg.tar.gz
+echo "======================"
+ls
+
+# source ./setup_lxplus.sh
+# source ./setVirtualEnvWrapper.sh
+# workon TEMPL_VIRTUALENV
 # cd ${BATCH_DIR}
+
+source  puppi_iso_p2eg/bin/activate
 date
-python analyzeNtuples.py -f TEMPL_CFG -i TEMPL_INPUT -c TEMPL_COLL -s TEMPL_SAMPLE -n -1 -o ${BATCH_DIR} -r ${PROCID} -b
+python analyzeNtuples.py -f TEMPL_CFG -i TEMPL_INPUT -p TEMPL_COLL -s TEMPL_SAMPLE -n -1 -o ${BATCH_DIR} -r ${PROCID}

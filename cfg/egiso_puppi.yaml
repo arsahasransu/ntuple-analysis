@@ -14,3 +14,4 @@ gen_plots:
     - dytoll_m50_PU0
   plotters:
     - !!python/name:cfg.egiso_puppi.all_genel_plotter
+  htc_jobflavor: espresso

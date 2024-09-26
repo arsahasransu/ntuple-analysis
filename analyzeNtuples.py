@@ -75,6 +75,8 @@ def analyzeNtuples(  # noqa: PLR0913
 
     opt = Parameters(
         {
+            'CONFIGFILE': configfile,
+            'DATASETFILE': datasetfile,
             'COLLECTION': collection,
             'SAMPLE': sample,
             'DEBUG': debug,

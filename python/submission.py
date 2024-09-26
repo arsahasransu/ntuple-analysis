@@ -2,7 +2,7 @@
 import os
 import sys
 
-import subprocess32
+import subprocess
 
 import python.file_manager as fm
 
@@ -27,6 +27,16 @@ def to_HTCondor(*, analyze, opt, submit_mode, plot_version, samples_to_process):
             os.mkdir(batch_dir)
             os.mkdir(batch_dir + "/conf/")
             os.mkdir(batch_dir + "/logs/")
+        else:
+            remake_dir = input(f"Directory {batch_dir} already exists. Do you want to remake it? [y/n]: ").strip().lower()
+            if remake_dir == "y":
+                os.system(f"rm -rf {batch_dir}")
+                os.mkdir(batch_dir)
+                os.mkdir(batch_dir + "/conf/")
+                os.mkdir(batch_dir + "/logs/")
+            else:
+                print("Exiting...")
+                sys.exit(0)
 
         dagman_sub = ""
         dagman_dep = ""
@@ -161,12 +171,28 @@ def to_HTCondor(*, analyze, opt, submit_mode, plot_version, samples_to_process):
         dagman_file.write(dagman_ret)
         dagman_file.close()
 
-        # create targz file of the code from git
-        git_proc = subprocess32.Popen(
-            ["git", "archive", "--format=tar.gz", "HEAD", "-o", os.path.join(batch_dir, "ntuple-tools.tar.gz")],
-            stdout=subprocess32.PIPE,
-        )
-        git_proc.wait()
+        # create a tarball of your current environment
+        try:
+            # create targz file of the code from git
+            subprocess.run(
+                ["git", "archive", "--format=tar.gz", "HEAD", "-o", os.path.join(batch_dir, "ntuple-tools.tar.gz")],
+                check=True
+            )
+            env_tarball = os.path.join(batch_dir, "puppi_iso_p2eg.tar.gz")
+            subprocess.run(
+                ["tar", "-czf", env_tarball, "./puppi_iso_p2eg/"],
+                check=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE
+            )
+            print(f"Environment tarball created at {env_tarball}")
+        except subprocess.CalledProcessError as e:
+            print(f"An error occurred while creating the tarball: {e.stderr.decode()}")
+        except KeyError:
+            print("The VIRTUAL_ENV environment variable is not set.")
+        except Exception as e:
+            print(f"An unexpected error occurred: {str(e)}")
+
         # cp TEMPL_TASKDIR/TEMPL_CFG
         print("Ready for HT-Condor submission please run the following commands:")
         print(f"condor_submit_dag {dagman_file_name}")
