@@ -11,7 +11,6 @@ from python.analyzer import analyze
 from python.parameters import Parameters, get_collection_parameters
 from python.submission import to_HTCondor
 from python.timecounter import print_stats
-import ROOT
 
 description = """
 Main script for L1 TP analysis.
@@ -48,7 +47,11 @@ def analyzeNtuples(  # noqa: PLR0913
     ),
     debug: int = typer.Option(0, '-d', '--debug', help='debug level'),
     nevents: int = typer.Option(10, '-n', '--nevents', help='# of events to process per sample'),
-    batch: int = typer.Option(None, '-b', '--batch', help='submit the jobs via CONDOR'),
+    # The current condor implementation creates jobs equivalent to the number of files in the input directory
+    # in a single sample. The -n option above means nothing in the context of condor submission.
+    batch: bool = typer.Option(False, '-b', '--batch', help='prepare for batch submission via CONDOR'),
+
+    # Usage of all the other options below currently unknown. Might have buggy implementation. Fix later if needed.
     run: str = typer.Option(None, '-r', '--run', help='the batch_id to run (need to be used with the option -b)'),
     outdir: str = typer.Option(None, '-o', '--outdir', help='override the output directory for the files'),
     local: bool = typer.Option(False, '-l', '--local', help='run the batch on local resources'),

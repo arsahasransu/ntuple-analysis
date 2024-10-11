@@ -1,7 +1,7 @@
 
 common:
   output_dir:
-    default: /opt/ppd/scratch/asahasra/egiso_puppi_dir
+    default: /opt/ppd/scratch/asahasra/egiso_puppi_hists/
   plot_version: v1
   run_clustering: False
   run_density_computation: False

@@ -25,5 +25,10 @@ ls
 # cd ${BATCH_DIR}
 
 source  puppi_iso_p2eg/bin/activate
+echo "======================"
+echo "Check the virtual environment"
+echo $VIRTUAL_ENV
+echo "======================"
+
 date
-python analyzeNtuples.py -f TEMPL_CFG -i TEMPL_INPUT -p TEMPL_COLL -s TEMPL_SAMPLE -n -1 -o ${BATCH_DIR} -r ${PROCID}
+python analyzeNtuples.py -f TEMPL_CFG -i TEMPL_INPUT -p TEMPL_COLL -s TEMPL_SAMPLE -n TEMPL_NEVENT -o ${BATCH_DIR} -r ${PROCID} -b 1

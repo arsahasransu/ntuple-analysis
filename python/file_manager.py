@@ -286,7 +286,8 @@ def copy_to_localdir(file_name, target_dir, target_file_name):
 
 
 def listFiles(input_dir, match='.root', recursive=True, debug=0):
-    fs = filesystem(input_dir)
+    # fs = filesystem(input_dir)
+    fs = LocalFileSystem('')
     allfiles = fs.list_dir(input_dir, recursive)
     matchedfiles = [f.name for f in allfiles if match in f.name]
     return sorted(matchedfiles)
@@ -295,7 +296,8 @@ def listFiles(input_dir, match='.root', recursive=True, debug=0):
 def stage_files(files_to_stage):
     ret_files = []
     for file_name in files_to_stage:
-        copy_ok = copy_from_eos(os.path.dirname(file_name), os.path.basename(file_name), os.path.basename(file_name))
+        # copy_ok = copy_from_eos(os.path.dirname(file_name), os.path.basename(file_name), os.path.basename(file_name))
+        copy_ok = copy_from_localdir(os.path.dirname(file_name), os.path.basename(file_name), os.path.basename(file_name))
         print(f'copy of file {file_name}, returned: {copy_ok}')
         if not copy_ok:
             print('  copy of file {file_name} failed, skipping')
