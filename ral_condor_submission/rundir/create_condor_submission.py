@@ -95,7 +95,7 @@ for dataset in datasets:
         'TEMP_MONITORPATH': '.',
         'TEMP_JOBFLAVOUR': 'espresso',
         'TEMP_JOBNUMS': numjobs,
-        'TEMP_INPUTFILES': '../ntuple-tools.tar.gz,../puppi_iso_p2eg.tar.gz,sample_config.yaml,inputfiles_condorcopy.sh'
+        'TEMP_INPUTFILES': '../ntuple-tools.tar.gz,sample_config.yaml,inputfiles_condorcopy.sh'
         }
     copy_and_replace('../templates/condor.sub', f'{condorDir}/condor_batch_analysis.sub', condor_analysis_sub_replacements)
 
@@ -109,8 +109,26 @@ for dataset in datasets:
     }
     copy_and_replace('../templates/run_batch_analysis.sh', f'{condorDir}/run_batch_analysis.sh', condor_analysis_sh_replacements)
 
-# Create environment and code tarballs
-res = input("\nRecreate environment and code tarballs? (y/n): ").lower()
+# # Create environment and code tarballs
+# res = input("\nRecreate environment tarball? (y/n): ").lower()
+# if res == 'y':
+#     try:
+#         os.chdir("../../")
+#         env_tarball = "ral_condor_submission/rundir/puppi_iso_p2eg.tar.gz"
+#         subprocess.run(
+#             ["tar", "-czf", env_tarball, "/opt/ppd/scratch/asahasra/egiso_puppi_dir/venv4histos_puppi_iso_p2eg"],
+#             check=True,
+#             stdout=subprocess.PIPE,
+#             stderr=subprocess.PIPE
+#         )
+#         print(f"Environment tarball created at {env_tarball}\n")
+#         os.chdir('ral_condor_submission/rundir')
+#     except subprocess.CalledProcessError as e:
+#         print(f"An error occurred while creating the tarball: {e.stderr.decode()}")
+#     except Exception as e:
+#         print(f"An unexpected error occurred: {str(e)}")
+
+res = input("\nRecreate code tarball? (y/n): ").lower()
 if res == 'y':
     try:
         os.chdir("../../")
@@ -118,19 +136,9 @@ if res == 'y':
             ["git", "archive", "--format=tar.gz", "HEAD", "-o", os.path.join("ral_condor_submission/rundir/ntuple-tools.tar.gz")],
             check=True
         )
-        env_tarball = "ral_condor_submission/rundir/puppi_iso_p2eg.tar.gz"
-        subprocess.run(
-            ["tar", "-czf", env_tarball, "./puppi_iso_p2eg/"],
-            check=True,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE
-        )
-        print(f"Environment tarball created at {env_tarball}\n")
         os.chdir('ral_condor_submission/rundir')
     except subprocess.CalledProcessError as e:
         print(f"An error occurred while creating the tarball: {e.stderr.decode()}")
-    except KeyError:
-        print("The VIRTUAL_ENV environment variable is not set.")
     except Exception as e:
         print(f"An unexpected error occurred: {str(e)}")
 

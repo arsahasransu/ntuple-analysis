@@ -1,6 +1,6 @@
 import sys
+import argparse
 
-import typer
 import yaml
 import importlib
 import pathlib
@@ -33,33 +33,8 @@ Histograms:
 
 
 @print_stats
-def analyzeNtuples(  # noqa: PLR0913
-    configfile: str = typer.Option(..., '-f', '--file', help='specify the yaml configuration file'),
-    datasetfile: str = typer.Option(
-        ..., '-i', '--input-dataset', help='specify the yaml file defining the input dataset'
-    ),
-    collection: str = typer.Option(..., '-p', '--plotters', help='specify the plotters to be run'),
-    sample: str = typer.Option(
-        ...,
-        '-s',
-        '--sample',
-        help='specify the sample to be processed',
-    ),
-    debug: int = typer.Option(0, '-d', '--debug', help='debug level'),
-    nevents: int = typer.Option(10, '-n', '--nevents', help='# of events to process per sample'),
-    # The current condor implementation creates jobs equivalent to the number of files in the input directory
-    # in a single sample. The -n option above means nothing in the context of condor submission.
-    batch: bool = typer.Option(False, '-b', '--batch', help='prepare for batch submission via CONDOR'),
-
-    # Usage of all the other options below currently unknown. Might have buggy implementation. Fix later if needed.
-    run: str = typer.Option(None, '-r', '--run', help='the batch_id to run (need to be used with the option -b)'),
-    outdir: str = typer.Option(None, '-o', '--outdir', help='override the output directory for the files'),
-    local: bool = typer.Option(False, '-l', '--local', help='run the batch on local resources'),
-    workers: int = typer.Option(2, '-j', '--jobworkers', help='# of local workers'),
-    workdir: str = typer.Option(None, '-w', '--workdir', help='local work directory'),
-    submit: bool = typer.Option(False, '-S', '--submit', help='submit the jobs via CONDOR'),
-):
-    if submit and local and not workdir:
+def analyzeNtuples(args):
+    if args.submit and args.local and not args.workdir:
         raise ValueError('The --workdir option is required when submitting jobs locally')
 
     def parse_yaml(filename):
@@ -69,28 +44,28 @@ def analyzeNtuples(  # noqa: PLR0913
     cfgfile = {}
 
     # we load the python module with the same name as the yaml file
-    pymoudule_path = pathlib.Path(configfile.split('.yaml')[0])
+    pymoudule_path = pathlib.Path(args.configfile.split('.yaml')[0])
     formatted_path = '.'.join(pymoudule_path.with_suffix('').parts)
     sys.modules[formatted_path] = importlib.import_module(formatted_path)
 
-    cfgfile.update(parse_yaml(configfile))
-    cfgfile.update(parse_yaml(datasetfile))
+    cfgfile.update(parse_yaml(args.configfile))
+    cfgfile.update(parse_yaml(args.datasetfile))
 
     opt = Parameters(
         {
-            'CONFIGFILE': configfile,
-            'DATASETFILE': datasetfile,
-            'COLLECTION': collection,
-            'SAMPLE': sample,
-            'DEBUG': debug,
-            'NEVENTS': nevents,
-            'BATCH': batch,
-            'RUN': run,
-            'OUTDIR': outdir,
-            'LOCAL': local,
-            'WORKERS': workers,
-            'WORKDIR': workdir,
-            'SUBMIT': submit,
+            'CONFIGFILE': args.configfile,
+            'DATASETFILE': args.datasetfile,
+            'COLLECTION': args.collection,
+            'SAMPLE': args.sample,
+            'DEBUG': args.debug,
+            'NEVENTS': args.nevents,
+            'BATCH': args.batch,
+            'RUN': args.run,
+            'OUTDIR': args.outdir,
+            'LOCAL': args.local,
+            'WORKERS': args.workers,
+            'WORKDIR': args.workdir,
+            'SUBMIT': args.submit,
         }
     )
     collection_params = get_collection_parameters(opt, cfgfile)
@@ -120,7 +95,7 @@ def analyzeNtuples(  # noqa: PLR0913
     to_HTCondor(
         analyze=analyze,
         opt=opt,
-        submit_mode=submit,
+        submit_mode=args.submit,
         plot_version=plot_version,
         samples_to_process=samples_to_process,
     )
@@ -137,6 +112,25 @@ def analyzeNtuples(  # noqa: PLR0913
         ret_nevents += analyze(sample, batch_idx=batch_idx)
     return ret_nevents
 
+def main():
+    parser = argparse.ArgumentParser(description=description)
+
+    parser.add_argument('-f', '--file', required=True, dest='configfile', help='specify the yaml configuration file')
+    parser.add_argument('-i', '--input-dataset', required=True, dest='datasetfile', help='specify the yaml file defining the input dataset')
+    parser.add_argument('-p', '--plotters', required=True, dest='collection', help='specify the plotters to be run')
+    parser.add_argument('-s', '--sample', required=True, help='specify the sample to be processed')
+    parser.add_argument('-d', '--debug', type=int, default=0, help='debug level')
+    parser.add_argument('-n', '--nevents', type=int, default=10, help='# of events to process per sample')
+    parser.add_argument('-b', '--batch', action='store_true', help='prepare for batch submission via CONDOR')
+    parser.add_argument('-r', '--run', help='the batch_id to run (need to be used with the option -b)')
+    parser.add_argument('-o', '--outdir', help='override the output directory for the files')
+    parser.add_argument('-l', '--local', action='store_true', help='run the batch on local resources')
+    parser.add_argument('-j', '--jobworkers', dest='workers', type=int, default=2, help='# of local workers')
+    parser.add_argument('-w', '--workdir', help='local work directory')
+    parser.add_argument('-S', '--submit', action='store_true', help='submit the jobs via CONDOR')
+
+    args = parser.parse_args()
+    analyzeNtuples(args)
 
 if __name__ == '__main__':
-    typer.run(analyzeNtuples)
+    main()
