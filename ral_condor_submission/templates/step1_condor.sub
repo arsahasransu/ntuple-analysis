@@ -11,6 +11,7 @@ output                = TEMP_MONITORPATH/outs/job.$(ClusterId).$(ProcId).out
 error                 = TEMP_MONITORPATH/errs/job.$(ClusterId).$(ProcId).err
 log                   = TEMP_MONITORPATH/logs/condor.$(ClusterId).log
 +JobFlavour           = TEMP_JOBFLAVOUR
++RequestMemory        = 2048
 
 # Retry up to 3 times if the job fails
 max_retries = 3

@@ -10,4 +10,10 @@ samples:
     input_sample_dir: DYToLL_M50_PU0/FP/240801_131Xv3a/
     events_per_file : -1
     files_per_job : 2
-    maxjobs: 4
+    maxjobs: 10
+
+  dytoll_m50_PU200:
+    input_sample_dir: DYToLL_M50_PU200/FP/240801_131Xv3a/
+    events_per_file : -1
+    files_per_job : 2
+    maxjobs: 10

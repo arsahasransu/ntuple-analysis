@@ -40,8 +40,11 @@ condor_submit_config = yaml.load(open(args.config), Loader=yaml.FullLoader)
 
 input_dir = condor_submit_config['dataset']['input_dir']
 
+dagman_file_text_job = ''
+dagman_file_text_script = ''
+dagman_file_text_relation = ''
 datasets = list(condor_submit_config['samples'].keys())
-for dataset in datasets:
+for datasetcount, dataset in enumerate(datasets):
     print(f'\nCreating condor submission config for dataset: {dataset}\n')
     condorDir = f"{dataset}_condorDir"
     if not os.path.exists(condorDir):
@@ -90,14 +93,16 @@ for dataset in datasets:
 
     add_to_sh = f'FILESPERJOB={files_per_job}\n'
 
+    setp1_analysis_filename = 'step1_run_batch_analysis.sh'
     condor_analysis_sub_replacements = {
-        'TEMP_SH_FILENAME': 'run_batch_analysis.sh',
-        'TEMP_MONITORPATH': '.',
+        'TEMP_DIR': f'{condorDir}',
+        'TEMP_SH_FILENAME': f'{condorDir}/{setp1_analysis_filename}',
+        'TEMP_MONITORPATH': f'./{condorDir}',
         'TEMP_JOBFLAVOUR': 'espresso',
         'TEMP_JOBNUMS': numjobs,
-        'TEMP_INPUTFILES': '../ntuple-tools.tar.gz,sample_config.yaml,inputfiles_condorcopy.sh'
+        'TEMP_INPUTFILES': f'ntuple-tools.tar.gz,{condorDir}/sample_config.yaml,{condorDir}/inputfiles_condorcopy.sh'
         }
-    copy_and_replace('../templates/condor.sub', f'{condorDir}/condor_batch_analysis.sub', condor_analysis_sub_replacements)
+    copy_and_replace('../templates/step1_condor.sub', f'{condorDir}/step1_condor_batch_analysis.sub', condor_analysis_sub_replacements)
 
     condor_analysis_sh_replacements = {
         'TEMPL_CFG': './cfg/egiso_puppi.yaml',
@@ -107,26 +112,25 @@ for dataset in datasets:
         'TEMPL_NEVENT': events_per_file,
         'TEMPL_ADD_TO_SH': add_to_sh
     }
-    copy_and_replace('../templates/run_batch_analysis.sh', f'{condorDir}/run_batch_analysis.sh', condor_analysis_sh_replacements)
+    copy_and_replace(f'../templates/{setp1_analysis_filename}', f'{condorDir}/{setp1_analysis_filename}', condor_analysis_sh_replacements)
 
-# # Create environment and code tarballs
-# res = input("\nRecreate environment tarball? (y/n): ").lower()
-# if res == 'y':
-#     try:
-#         os.chdir("../../")
-#         env_tarball = "ral_condor_submission/rundir/puppi_iso_p2eg.tar.gz"
-#         subprocess.run(
-#             ["tar", "-czf", env_tarball, "/opt/ppd/scratch/asahasra/egiso_puppi_dir/venv4histos_puppi_iso_p2eg"],
-#             check=True,
-#             stdout=subprocess.PIPE,
-#             stderr=subprocess.PIPE
-#         )
-#         print(f"Environment tarball created at {env_tarball}\n")
-#         os.chdir('ral_condor_submission/rundir')
-#     except subprocess.CalledProcessError as e:
-#         print(f"An error occurred while creating the tarball: {e.stderr.decode()}")
-#     except Exception as e:
-#         print(f"An unexpected error occurred: {str(e)}")
+    # copy_and_replace('../templates/step2_condor_hadd.sub', f'{condorDir}/step2_condor_hadd.sub', condor_analysis_sub_replacements)
+
+    # shutil.copyfile('../templates/step2_run_hadd.sh', f'{condorDir}/step2_run_hadd.sh')
+
+    # Add entry for condor dagman file
+    dagman_file_text_job += f'JOB analysis{datasetcount} {condorDir}/step1_condor_batch_analysis.sub\n'
+    # dagman_file_text_job += f'JOB hadd{datasetcount} {condorDir}/step2_condor_hadd.sub\n'
+    # dagman_file_text_script += f'SCRIPT POST analysis{datasetcount} {condorDir}/step1_post_script.sh\n'
+    # dagman_file_text_relation += f'PARENT analysis{datasetcount} CHILD hadd{datasetcount}\n'
+
+# Write the dagman file
+with open('dagman_file.dag', 'w') as f:
+    f.write(dagman_file_text_job)
+    f.write("\n")
+    # f.write(dagman_file_text_script)
+    f.write("\n")
+    # f.write(dagman_file_text_relation)
 
 res = input("\nRecreate code tarball? (y/n): ").lower()
 if res == 'y':
@@ -141,13 +145,3 @@ if res == 'y':
         print(f"An error occurred while creating the tarball: {e.stderr.decode()}")
     except Exception as e:
         print(f"An unexpected error occurred: {str(e)}")
-
-# Submit jobs
-res = input('Done creating condor submission files. Proceeding to submit jobs? (y/n)').lower()
-for dataset in datasets:
-    if res == 'y':
-        os.chdir(f"{dataset}_condorDir")
-        os.system(f"condor_submit condor_batch_analysis.sub")
-        os.chdir("..")
-    else:
-        print(f"\nSubmission skipped\n")

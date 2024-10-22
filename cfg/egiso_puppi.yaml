@@ -1,7 +1,7 @@
 
 common:
   output_dir:
-    default: /opt/ppd/scratch/asahasra/egiso_puppi_hists/
+    default: /opt/ppd/scratch/asahasra/condor_scratch/Histos/
   plot_version: v1
   run_clustering: False
   run_density_computation: False
@@ -12,6 +12,7 @@ gen_plots:
     gens
   samples:
     - dytoll_m50_PU0
+    - dytoll_m50_PU200
   plotters:
     - !!python/name:cfg.egiso_puppi.all_genel_plotter
   htc_jobflavor: espresso
