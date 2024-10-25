@@ -1,5 +1,4 @@
-from python import plotters, selections, collections
-from cfg.datasets.fastpuppi_collections import gen_ele
+from eg_puppi_iso.collections import gen_ele
+from eg_puppi_iso.plotters import GenPlotter
 
-
-all_genel_plotter = [plotters.GenPlotter(gen_ele)]
+all_genel_plotter = [GenPlotter(gen_ele)]
