@@ -10,8 +10,8 @@ class GenParticleExtraHistos(GenParticleHistos):
             self.h_n = bh.TH1F(f'{name}_#', 'Gen Part #; #', 10, 0, 10)
             self.h_pdgid = bh.TH1F(f'{name}_pdgid', 'Gen Part pdgid; pdgid;', 100, -50, 50)
             self.h_phi = bh.TH1F(f'{name}_phi', 'Gen Part phi; #phi;', 640, -3.2, 3.2)
-            self.h_prompt = bh.TH1F(f'{name}_promptStatus', 'Gen Part prompt status; prompt_status;', 1000, -500, 500)
-            self.h_vz = bh.TH1F(f'{name}_zVertex', 'Gen Part vz; zVertex;', 1000, -500, 500)
+            self.h_prompt = bh.TH1F(f'{name}_promptStatus', 'Gen Part prompt status; prompt_status;', 10, -1, 9)
+            self.h_vz = bh.TH1F(f'{name}_zVertex', 'Gen Part vz; zVertex;', 2500, -125, 125)
 
         GenParticleHistos.__init__(self, name, root_file, pt_bins, debug)
 
