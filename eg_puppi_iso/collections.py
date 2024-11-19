@@ -19,7 +19,5 @@ gen_ele = DFCollection(
     filler_function=lambda event, entry_block: event.getDataFrame(
         prefix='GenEl', entry_block=entry_block),
     fixture_function=ele_mc_fixtures,
-    # print_function=lambda df: df[['pdgid', 'pt', 'eta', 'phi']],
-    # print_function=lambda df: df[(df.pdgid==23 | (abs(df.pdgid)==15))],
     max_print_lines=None,
     debug=1)
