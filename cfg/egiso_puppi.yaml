@@ -16,4 +16,5 @@ gen_plots:
   plotters:
     # - !!python/name:cfg.egiso_puppi.all_genel_plotter
     - !!python/name:cfg.egiso_puppi.prompt_genel_plotter
+    - !!python/name:cfg.egiso_puppi.all_puppi_plotter
   htc_jobflavor: espresso
