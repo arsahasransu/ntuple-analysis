@@ -1,11 +1,11 @@
 from python.plotters import GenericDataFramePlotter
 
-from .histos import GenCaloParticleHistos
+from .histos import CaloGenParticleHistos
 
 class GenPlotter(GenericDataFramePlotter):
     def __init__(self, gen_set, gen_selections, pt_bins=None):
         super(GenPlotter, self).__init__(
-            GenCaloParticleHistos,
+            CaloGenParticleHistos,
             gen_set,
             gen_selections,
             pt_bins)
