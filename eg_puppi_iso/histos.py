@@ -64,3 +64,11 @@ class CaloGenParticleHistos(GenParticleHistos):
                        array=particles.calophi)
         
         GenParticleHistos.fill(self, particles)
+
+    
+class AngularDiffHistos(BaseHistos):
+    def __init__(self, name, root_file=None, pt_bins=None, debug=False):
+        if not root_file:
+            self.h_deta = bh.TH1F(f'{name}_deta', 'dEta; #Delta#eta;', 1000, -1, 1)
+            self.h_dphi = bh.TH1F(f'{name}_dphi', 'dPhi; #Delta#phi;', 1000, -1, 1)
+            self.h_dR = bh.TH1F(f'{name}_dR', 'dR; #DeltaR;', 1000, -1, 1)

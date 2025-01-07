@@ -1,5 +1,5 @@
 dataset:
-  input_dir:  /opt/ppd/scratch/asahasra/condor_scratch/Outputs/
+  input_dir:  /mercury/data3/asahasra/Phase2L1tAlgoStudies/ntuple-analysis/puppiIsoData
   calib_version: calib-v134C
   version: 131Xv3a
 
